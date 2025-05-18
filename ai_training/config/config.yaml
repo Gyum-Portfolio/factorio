@@ -1,0 +1,19 @@
+# Model selections
+models:
+  default: "anthropic:claude-3-5-sonnet-20241022"
+  available:
+    claude: "anthropic:claude-3-5-sonnet-20241022"
+    gpt4: "openai:gpt-4"
+    starcoder: "huggingface:bigcode/starcoder2-15b"
+
+
+# Job configurations for DelftBlue
+job_config:
+  batch_size: 32
+  max_tokens: 1000
+  temperature: 0.7
+
+# Data paths
+paths:
+  input: "/path/on/delftblue/to/code/samples"
+  output: "/path/on/delftblue/to/results"
