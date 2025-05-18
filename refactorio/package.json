@@ -1,0 +1,91 @@
+{
+    "name": "refactorio",
+    "displayName": "refactorio",
+    "description": "",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.95.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:java",
+        "onStartupFinished"
+    ],
+    "extensionDependencies": [
+        "vscode.git"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "configuration": {
+            "title": "Refactorio",
+            "properties": {
+                "refactorio.modelProvider": {
+                    "type": "string",
+                    "enum": [
+                        "anthropic",
+                        "openai"
+                    ],
+                    "default": "anthropic",
+                    "description": "Select the AI model provider to use for code refactoring suggestions",
+                    "enumDescriptions": [
+                        "Anthropic",
+                        "OpenAI"
+                    ]
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "refactorio.startListeningToGitChanges",
+                "title": "Refactorio: Listen to Git Changes"
+            },
+            {
+                "command": "refactorio.applyRefactoredChanges",
+                "title": "Refactorio: Apply Changes"
+            },
+            {
+                "command": "refactorio.viewRefactoredChanges",
+                "title": "Refactorio: View Changes"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "refactorio.applyRefactoredChanges",
+                "key": "alt+enter"
+            },
+            {
+                "command": "refactorio.viewRefactoredChanges",
+                "key": "cmd+shift+r",
+                "when": "refactorioHasChanges"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src",
+        "test": "vscode-test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^10.0.9",
+        "@types/node": "20.x",
+        "@types/vscode": "^1.95.0",
+        "@typescript-eslint/eslint-plugin": "^8.10.0",
+        "@typescript-eslint/parser": "^8.7.0",
+        "@vscode/test-cli": "^0.0.10",
+        "@vscode/test-electron": "^2.4.1",
+        "eslint": "^9.13.0",
+        "nativescript-dev-typescript": "^0.7.0",
+        "typescript": "^5.6.3"
+    },
+    "dependencies": {
+        "ollama": "^0.5.11",
+        "ollama-node": "^0.1.28",
+        "tree-sitter": "^0.21.1",
+        "tree-sitter-java": "^0.23.4"
+    }
+}
