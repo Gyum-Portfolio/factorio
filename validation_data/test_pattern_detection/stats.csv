@@ -1,0 +1,696 @@
+index,refactoring_opportunity_detected?,code,message
+0,False,,
+1,False,,
+2,True,"java
+public static class Factory implements InlineContentParserFactory {
+    @Override
+    public char getTriggerCharacter() {
+        return '<';
+    }
+
+    @Override
+    public InlineContentParser create() {
+        return new AutolinkInlineParser();
+    }
+}",
+3,False,,
+4,False,,
+5,False,,
+6,False,,
+7,True,"java
+/**
+ * Factory class which instantiates a new FakeService service object.
+ */
+@SuppressWarnings(""rawtypes"")
+static final class FakeServiceFactory implements ServiceFactory {
+
+    private final Map _config;
+    private final String _serviceInstanceName;
+
+    public FakeServiceFactory(Map config, String serviceInstanceName) {
+        this._config = config;
+        this._serviceInstanceName = serviceInstanceName;
+    }
+
+    @SuppressWarnings(""unchecked"")
+    @Override
+    public Service createService() throws Exception {
+        return new KafkaMonitorTest.FakeService(_config, _serviceInstanceName);
+    }
+}",
+8,False,,
+9,False,,
+10,False,,
+11,False,,
+12,False,,
+13,False,,
+14,False,,
+15,False,,
+16,False,,
+17,False,,
+18,False,,
+19,False,,
+20,False,,
+21,True,"java
+public class AttributeStorageFactoryService implements IAttributeStorageFactoryService
+{
+    private final CopyOnWriteArrayList<Class<? extends IAttributeStorageFactory>> attributeStorageFactories = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<IAttributeStorageListener> attributeStorageListeners = new CopyOnWriteArrayList<>();
+
+    public AttributeStorageFactoryService()
+    {
+        // Setup Default Attribute Storage Factories
+        addAttributeStorageFactory(HUAttributeStorageFactory.class);
+        addAttributeStorageFactory(ASIAttributeStorageFactory.class);
+        addAttributeStorageFactory(ASIAwareAttributeStorageFactory.class);
+    }
+
+    @Override
+    public IAttributeStorageFactory createHUAttributeStorageFactory()
+    {
+        final IHUStorageFactory huStorageFactory = Services.get(IHandlingUnitsBL.class).getStorageFactory();
+        return createHUAttributeStorageFactory(huStorageFactory, HUAttributesDAO.instance);
+    }
+
+    @Override
+    public IAttributeStorageFactory createHUAttributeStorageFactory(@NonNull final IHUStorageFactory huStorageFactory)
+    {
+        return createHUAttributeStorageFactory(huStorageFactory, HUAttributesDAO.instance);
+    }
+
+    @Override
+    public IAttributeStorageFactory createHUAttributeStorageFactory(
+            @NonNull final IHUStorageFactory huStorageFactory,
+            @NonNull final IHUAttributesDAO huAttributesDAO)
+    {
+        final IAttributeStorageFactory factory = prepareHUAttributeStorageFactory(huAttributesDAO);
+        factory.setHUStorageFactory(huStorageFactory);
+
+        return factory;
+    }
+
+    @Override
+    public IAttributeStorageFactory prepareHUAttributeStorageFactory(@NonNull final IHUAttributesDAO huAttributesDAO)
+    {
+        final CompositeAttributeStorageFactory factory = new CompositeAttributeStorageFactory();
+        factory.setHUAttributesDAO(huAttributesDAO);
+        factory.addAttributeStorageFactoryClasses(attributeStorageFactories);
+
+        for (final IAttributeStorageListener attributeStorageListener : attributeStorageListeners)
+        {
+            factory.addAttributeStorageListener(attributeStorageListener);
+        }
+        return factory;
+    }
+
+    @Override
+    public void addAttributeStorageFactory(@NonNull final Class<? extends IAttributeStorageFactory> attributeStorageFactoryClass)
+    {
+        attributeStorageFactories.addIfAbsent(attributeStorageFactoryClass);
+    }
+
+    @Override
+    public void addAttributeStorageListener(@NonNull final IAttributeStorageListener attributeStorageListener)
+    {
+        attributeStorageListeners.add(attributeStorageListener);
+    }
+}",
+22,False,,
+23,False,,
+24,False,,
+25,False,,
+26,False,,
+27,False,,
+28,False,,
+29,False,,
+30,False,,
+31,False,,
+32,False,,
+33,True,"java
+public class SqlUtilsFactoryImpl implements SqlUtilsFactory {
+    @Override
+    public SqlUtils create(DataSource ds) {
+        return new SqlUtilsImpl(ds);
+    }
+
+    public static class SqlUtilsImpl extends SimpleSqlUtils {
+        public SqlUtilsImpl(DataSource ds) {
+            super(ds);
+        }
+
+        @Override
+        public SqlExecutor sql(String sql, Object... args) {
+            // Print SQL statement
+            System.out.println(sql);
+            return super.sql(sql, args);
+        }
+    }
+}",
+34,False,,
+35,False,"java\npackage com.tinkerpop.gremlin.process.traverser.util;\n\nimport com.tinkerpop.gremlin.process.Traversal;\nimport com.tinkerpop.gremlin.process.TraverserGenerator;\nimport com.tinkerpop.gremlin.process.traverser.PathTraverserGenerator;\nimport com.tinkerpop.gremlin.process.traverser.SimpleTraverserGenerator;\nimport com.tinkerpop.gremlin.process.traverser.TraverserGeneratorFactory;\nimport com.tinkerpop.gremlin.process.util.TraversalHelper;\n\nimport java.util.Collections;\nimport java.util.Set;\n\n/**\n * @author Marko A. Rodriguez (http://markorodriguez.com)\n */\npublic class DefaultTraverserGeneratorFactory implements TraverserGeneratorFactory {\n\n    private static DefaultTraverserGeneratorFactory INSTANCE = new DefaultTraverserGeneratorFactory();\n    private static final PathTraverserGenerator PATH_TRAVERSER_GENERATOR = PathTraverserGenerator.instance();\n    private static final SimpleTraverserGenerator SIMPLE_TRAVERSER_GENERATOR = SimpleTraverserGenerator.instance();\n\n    public static DefaultTraverserGeneratorFactory instance() {\n        return INSTANCE;\n    }\n\n    private DefaultTraverserGeneratorFactory() {\n    }\n\n    public TraverserGenerator getTraverserGenerator(final Traversal traversal) {\n        return this.getRequirements(traversal).contains(TraverserRequirements.UNIQUE_PATH) ?\n                PATH_TRAVERSER_GENERATOR :\n                SIMPLE_TRAVERSER_GENERATOR;\n    }\n\n    public Set<TraverserRequirements> getRequirements(final Traversal traversal) {\n        return TraversalHelper.trackPaths(traversal) ?\n                Collections.singleton(TraverserRequirements.UNIQUE_PATH) :\n                Collections.emptySet();\n    }\n}",
+36,False,,
+37,False,,
+38,True,"java
+interface IHUQueryBuilderFactory {
+    IHUQueryBuilder createHUQueryBuilder(PackingHUsViewKey key);
+}
+
+class DefaultHUQueryBuilderFactory implements IHUQueryBuilderFactory {
+    private final IHandlingUnitsDAO handlingUnitsDAO;
+
+    public DefaultHUQueryBuilderFactory(IHandlingUnitsDAO handlingUnitsDAO) {
+        this.handlingUnitsDAO = handlingUnitsDAO;
+    }
+
+    @Override
+    public IHUQueryBuilder createHUQueryBuilder(PackingHUsViewKey key) {
+        IHUQueryBuilder huQuery = handlingUnitsDAO.createHUQueryBuilder()
+                .setIncludeAfterPickingLocator(true)
+                .setExcludeHUsOnPickingSlot(true)
+                .onlyNotLocked();
+
+        if (key.getBpartnerId() > 0) {
+            huQuery.addOnlyInBPartnerId(key.getBpartnerId());
+        }
+        if (key.getBpartnerLocationId() > 0) {
+            huQuery.addOnlyWithBPartnerLocationId(key.getBpartnerLocationId());
+        }
+
+        return huQuery;
+    }
+}",
+39,False,,
+40,False,,
+41,False,,
+42,False,,
+43,False,,
+44,False,,
+45,False,,
+46,False,,
+47,False,,
+48,False,,
+49,False,,
+50,False,,
+51,False,,
+52,False,,
+53,False,,
+54,False,,
+55,False,,
+56,False,,
+57,False,,
+58,False,,
+59,False,,
+60,False,,
+61,False,,
+62,True,"java
+public interface Factory<T> {
+    Instance<T> create();
+}",
+63,False,,
+64,False,,
+65,False,,
+66,True,Factory should NOT be implemented,
+67,False,,
+68,False,,
+69,False,,
+70,False,,
+71,False,,
+72,False,,
+73,False,,
+74,False,,
+75,False,,
+76,False,,
+77,False,,
+78,False,,
+79,False,,
+80,False,,
+81,True,"java
+// Interface for the product
+interface IEventBus {
+    void publish(Object event);
+    void subscribe(IEventListener listener);
+    // other methods
+}
+
+// Concrete product implementation
+class EventBus implements IEventBus {
+    private final String name;
+
+    public EventBus(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void publish(Object event) {
+        System.out.println(""Publishing event "" + event + "" on bus "" + name);
+    }
+
+    @Override
+    public void subscribe(IEventListener listener) {
+        System.out.println(""Subscribing listener "" + listener + "" to bus "" + name);
+    }
+
+    // other method implementations
+}
+
+// Factory interface
+interface IEventBusFactory {
+    IEventBus createEventBus(String name);
+}
+
+// Concrete factory implementation
+class PlainEventBusFactory implements IEventBusFactory {
+    @Override
+    public IEventBus createEventBus(String name) {
+        return new EventBus(name);
+    }
+}
+
+// Client code
+public class Client {
+    public static void main(String[] args) {
+        IEventBusFactory factory = new PlainEventBusFactory();
+        IEventBus eventBus = factory.createEventBus(""MyBus"");
+        eventBus.publish(""Hello, world!"");
+        eventBus.subscribe(() -> System.out.println(""Event received""));
+    }
+}",
+82,True,"java
+// Interface for creating clients
+interface ClientFactory {
+    HttpClient createClient();
+}
+
+// Concrete factory for creating HTTP clients
+class HttpClientFactory implements ClientFactory {
+    private final ClientFactoryOptions options;
+
+    public HttpClientFactory(ClientFactoryOptions options) {
+        this.options = options;
+    }
+
+    @Override
+    public HttpClient createClient() {
+        // Use the ClientFactoryBuilder to create the HttpClient instance
+        return new DefaultHttpClient(options);
+    }
+}
+
+// Usage
+ClientFactory httpClientFactory = new HttpClientFactory(ClientFactoryBuilder.build());
+HttpClient client = httpClientFactory.createClient();
+// Use the client for making requests",
+83,False,,
+84,True,"java
+// Factory interface
+interface IEventBusFactory {
+    IEventBus getEventBus(Topic topic);
+    // Other methods...
+}
+
+// Concrete Factory implementation
+public class PlainEventBusFactory implements IEventBusFactory {
+    // Factory method
+    @Override
+    public IEventBus getEventBus(final Topic topic) {
+        assertJUnitTestMode();
+        return eventBuses.computeIfAbsent(topic, this::createEventBus);
+    }
+
+    private EventBus createEventBus(final Topic topic) {
+        final ExecutorService executor = null;
+        return new EventBus(topic.getName(), executor);
+    }
+
+    // Other methods...
+}
+
+// Product interface
+interface IEventBus {
+    // Methods...
+}
+
+// Concrete Product implementation
+class EventBus implements IEventBus {
+    // Implementation...
+}",
+85,False,,
+86,False,,
+87,True,"java
+// Interface for the AnnotatedTypeMirrorFactory
+interface AnnotatedTypeMirrorFactory<T> {
+    AnnotatedTypeMirror createAnnotatedTypeMirror(T input);
+}
+
+// Concrete factory for creating AnnotatedTypeMirror from Element
+class ElementFactory implements AnnotatedTypeMirrorFactory<Element> {
+    private final AnnotatedTypeFactory annotatedTypeFactory;
+
+    public ElementFactory(AnnotatedTypeFactory annotatedTypeFactory) {
+        this.annotatedTypeFactory = annotatedTypeFactory;
+    }
+
+    @Override
+    public AnnotatedTypeMirror createAnnotatedTypeMirror(Element input) {
+        return annotatedTypeFactory.fromElement(input);
+    }
+}
+
+// Concrete factory for creating AnnotatedTypeMirror from Tree
+class TreeFactory implements AnnotatedTypeMirrorFactory<Tree> {
+    private final AnnotatedTypeFactory annotatedTypeFactory;
+
+    public TreeFactory(AnnotatedTypeFactory annotatedTypeFactory) {
+        this.annotatedTypeFactory = annotatedTypeFactory;
+    }
+
+    @Override
+    public AnnotatedTypeMirror createAnnotatedTypeMirror(Tree input) {
+        if (input instanceof ClassTree) {
+            return annotatedTypeFactory.fromClass((ClassTree) input);
+        } else if (input instanceof MethodTree || input instanceof VariableTree) {
+            return annotatedTypeFactory.fromMember(input);
+        } else if (TreeUtils.isExpressionTree(input)) {
+            return annotatedTypeFactory.fromExpression((ExpressionTree) input);
+        } else {
+            return annotatedTypeFactory.fromTypeTree(input);
+        }
+    }
+}
+
+// Modifications in AnnotatedTypeFactory
+public class AnnotatedTypeFactory {
+    // ...
+
+    public <T> AnnotatedTypeMirrorFactory<T> getAnnotatedTypeMirrorFactory(T input) {
+        if (input instanceof Element) {
+            return new ElementFactory(this);
+        } else if (input instanceof Tree) {
+            return new TreeFactory(this);
+        }
+        // Add more factory implementations for other input types if needed
+        throw new IllegalArgumentException(""Unsupported input type: "" + input.getClass());
+    }
+
+    public AnnotatedTypeMirror getAnnotatedType(Element elt) {
+        AnnotatedTypeMirrorFactory<Element> factory = getAnnotatedTypeMirrorFactory(elt);
+        return factory.createAnnotatedTypeMirror(elt);
+    }
+
+    public AnnotatedTypeMirror getAnnotatedType(Tree tree) {
+        AnnotatedTypeMirrorFactory<Tree> factory = getAnnotatedTypeMirrorFactory(tree);
+        return factory.createAnnotatedTypeMirror(tree);
+    }
+
+    // Other methods like fromElement,",
+88,False,,
+89,False,,
+90,False,,
+91,False,,
+92,False,,
+93,False,,
+94,False,,
+95,True,Factory should NOT be implemented,
+96,False,,
+97,False,,
+98,False,,
+99,False,,
+100,False,,
+101,False,,
+102,False,,
+103,False,,
+104,False,,
+105,False,,
+106,False,,
+107,False,,
+108,False,,
+109,False,,
+110,False,,
+111,False,,
+112,False,,
+113,False,,
+114,False,,
+115,False,,
+116,False,,
+117,False,,
+118,False,,
+119,False,,
+120,False,,
+121,False,,
+122,False,,
+123,False,,
+124,False,,
+125,True,"java
+// HUEditorView Factory
+interface HUEditorViewFactory {
+    HUEditorView createHUEditorView(CreateViewRequest request);
+}
+
+class DefaultHUEditorViewFactory implements HUEditorViewFactory {
+    private final DefaultHUEditorViewFactory huEditorViewFactory;
+
+    public DefaultHUEditorViewFactory(DefaultHUEditorViewFactory huEditorViewFactory) {
+        this.huEditorViewFactory = huEditorViewFactory;
+    }
+
+    @Override
+    public HUEditorView createHUEditorView(CreateViewRequest request) {
+        return huEditorViewFactory.createView(request);
+    }
+}
+
+// IHUQueryBuilder Factory
+interface HUQueryBuilderFactory {
+    IHUQueryBuilder createHUQueryBuilder(PackingHUsViewKey key);
+}
+
+class DefaultHUQueryBuilderFactory implements HUQueryBuilderFactory {
+    private final IHandlingUnitsDAO handlingUnitsDAO;
+
+    public DefaultHUQueryBuilderFactory(IHandlingUnitsDAO handlingUnitsDAO) {
+        this.handlingUnitsDAO = handlingUnitsDAO;
+    }
+
+    @Override
+    public IHUQueryBuilder createHUQueryBuilder(PackingHUsViewKey key) {
+        IHUQueryBuilder huQuery = handlingUnitsDAO.createHUQueryBuilder()
+                .setIncludeAfterPickingLocator(true)
+                .setExcludeHUsOnPickingSlot(true)
+                .onlyNotLocked();
+
+        if (key.getBpartnerId() > 0) {
+            huQuery.addOnlyInBPartnerId(key.getBpartnerId());
+        }
+        if (key.getBpartnerLocationId() > 0) {
+            huQuery.addOnlyWithBPartnerLocationId(key.getBpartnerLocationId());
+        }
+        return huQuery;
+    }
+}",
+126,False,,
+127,False,,
+128,False,,
+129,False,,
+130,False,,
+131,False,,
+132,False,,
+133,False,,
+134,False,,
+135,False,,
+136,False,,
+137,False,,
+138,False,,
+139,False,,
+140,False,,
+141,False,,
+142,False,,
+143,False,,
+144,False,,
+145,False,,
+146,False,,
+147,False,,
+148,True,"java
+// Interface for Client
+interface Client {
+    void sendRequest(Request request);
+    // Other common methods
+}
+
+// Concrete implementation for HTTP Client
+class HttpClient implements Client {
+    private final ClientConfiguration config;
+
+    public HttpClient(ClientConfiguration config) {
+        this.config = config;
+    }
+
+    @Override
+    public void sendRequest(Request request) {
+        // Send HTTP request using the configuration
+    }
+
+    // Other HTTP-specific methods
+}
+
+// Concrete implementation for WebSocket Client
+class WebSocketClient implements Client {
+    private final ClientConfiguration config;
+
+    public WebSocketClient(ClientConfiguration config) {
+        this.config = config;
+    }
+
+    @Override
+    public void sendRequest(Request request) {
+        // Send WebSocket request using the configuration
+    }
+
+    // Other WebSocket-specific methods
+}
+
+// Factory class
+public class ClientFactoryBuilder {
+    // Existing builder configuration methods
+
+    public static Client createHttpClient(ClientConfiguration config) {
+        return new HttpClient(config);
+    }
+
+    public static Client createWebSocketClient(ClientConfiguration config) {
+        return new WebSocketClient(config);
+    }
+
+    // Other factory methods for creating different types of clients
+}",
+149,False,,
+150,False,,
+151,False,,
+152,False,,
+153,False,,
+154,False,,
+155,False,,
+156,False,,
+157,False,,
+158,False,,
+159,False,,
+160,False,,
+161,False,,
+162,False,,
+163,False,,
+164,False,,
+165,False,,
+166,True,"java
+// Client interface
+interface Client {
+    void connect();
+    void sendData(String data);
+    void disconnect();
+}
+
+// Concrete implementation for HTTP client
+class HttpClient implements Client {
+    private String serverUrl;
+
+    public HttpClient(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
+    @Override
+    public void connect() {
+        System.out.println(""Connecting to HTTP server: "" + serverUrl);
+    }
+
+    @Override
+    public void sendData(String data) {
+        System.out.println(""Sending HTTP data: "" + data);
+    }
+
+    @Override
+    public void disconnect() {
+        System.out.println(""Disconnecting from HTTP server"");
+    }
+}
+
+// Concrete implementation for FTP client
+class FtpClient implements Client {
+    private String serverAddress;
+
+    public FtpClient(String serverAddress) {
+        this.serverAddress = serverAddress;
+    }
+
+    @Override
+    public void connect() {
+        System.out.println(""Connecting to FTP server: "" + serverAddress);
+    }
+
+    @Override
+    public void sendData(String data) {
+        System.out.println(""Sending FTP data: "" + data);
+    }
+
+    @Override
+    public void disconnect() {
+        System.out.println(""Disconnecting from FTP server"");
+    }
+}
+
+// ClientFactory
+class ClientFactory {
+    public static Client getClient(String type, String config) {
+        if (type.equalsIgnoreCase(""http"")) {
+            return new HttpClient(config);
+        } else if (type.equalsIgnoreCase(""ftp"")) {
+            return new FtpClient(config);
+        } else {
+            throw new IllegalArgumentException(""Invalid client type: "" + type);
+        }
+    }
+}
+
+// Usage
+public class Main {
+    public static void main(String[] args) {
+        Client httpClient = ClientFactory.getClient(""http"", ""www.example.com"");
+        httpClient.connect();
+        httpClient.sendData(""Hello, HTTP!"");
+        httpClient.disconnect();
+
+        Client ftpClient = ClientFactory.getClient(""ftp"", ""ftp.example.org"");
+        ftpClient.connect();
+        ftpClient.sendData(""Hello, FTP!"");
+        ftpClient.disconnect();
+    }
+}",
+167,False,,
+168,True,"java
+@Service
+public class DpdShipperGatewayClientFactory implements ShipperGatewayClientFactory
+{
+    private final DpdClientConfigRepository configRepo;
+
+    public DpdShipperGatewayClientFactory(final DpdClientConfigRepository configRepo)
+    {
+        this.configRepo = configRepo;
+    }
+
+    @Override
+    public String getShipperGatewayId()
+    {
+        return DpdConstants.SHIPPER_GATEWAY_ID;
+    }
+
+    @Override
+    public ShipperGatewayClient newClientForShipperId(@NonNull final ShipperId shipperId)
+    {
+        final DpdClientConfig config = configRepo.getByShipperId(shipperId);
+        return DpdShipperGatewayClient.builder()
+                .config(config)
+                // .databaseLogger(DhlDatabaseClientLogger.instance) // todo
+                .build();
+    }
+}",
+169,False,,
+170,False,,
+171,False,,
+172,False,,

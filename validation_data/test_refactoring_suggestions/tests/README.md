@@ -1,0 +1,1 @@
+This file contains the classes that we tested Refactorio's suggestions capabilities on. There are no scripts necessary. If you wish to test it, you should be able to use our extension on the classes, as described under the extension readme.
