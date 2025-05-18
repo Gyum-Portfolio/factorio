@@ -1,0 +1,104 @@
+{
+  "class_before_refactoring": "public class Computer {\n    private String ram;\n    private String cpu;\n    public Computer(String ram, String cpu) {\n        this.ram = ram;\n        this.cpu = cpu;\n    }\n}",
+  "class_after_refactoring": "interface Computer {\n    String getRam();\n    String getCpu();\n}\n\nclass Desktop implements Computer {\n    private String ram;\n    private String cpu;\n    public Desktop(String ram, String cpu) {\n        this.ram = ram;\n        this.cpu = cpu;\n    }\n    public String getRam() { return ram; }\n    public String getCpu() { return cpu; }\n}\n\nclass ComputerFactory {\n    public static Computer createComputer(String ram, String cpu) {\n        return new Desktop(ram, cpu);\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Vehicle {\n    private String type;\n    private int wheels;\n    public Vehicle(String type, int wheels) {\n        this.type = type;\n        this.wheels = wheels;\n    }\n}",
+  "class_after_refactoring": "interface Vehicle {\n    String getType();\n    int getWheels();\n}\n\nclass Car implements Vehicle {\n    private String type;\n    private int wheels;\n    public Car(String type, int wheels) {\n        this.type = type;\n        this.wheels = wheels;\n    }\n    public String getType() { return type; }\n    public int getWheels() { return wheels; }\n}\n\nclass VehicleFactory {\n    public static Vehicle createVehicle(String type, int wheels) {\n        return new Car(type, wheels);\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Animal {\n    private String species;\n    private String sound;\n    public Animal(String species, String sound) {\n        this.species = species;\n        this.sound = sound;\n    }\n}",
+  "class_after_refactoring": "interface Animal {\n    String getSpecies();\n    String makeSound();\n}\n\nclass Dog implements Animal {\n    private String species;\n    private String sound;\n    public Dog(String species, String sound) {\n        this.species = species;\n        this.sound = sound;\n    }\n    public String getSpecies() { return species; }\n    public String makeSound() { return sound; }\n}\n\nclass AnimalFactory {\n    public static Animal createAnimal(String species, String sound) {\n        return new Dog(species, sound);\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Shape {\n    private String type;\n    private double area;\n    public Shape(String type, double area) {\n        this.type = type;\n        this.area = area;\n    }\n}",
+  "class_after_refactoring": "interface Shape {\n    String getType();\n    double calculateArea();\n}\n\nclass Circle implements Shape {\n    private String type;\n    private double radius;\n    public Circle(double radius) {\n        this.type = \"Circle\";\n        this.radius = radius;\n    }\n    public String getType() { return type; }\n    public double calculateArea() { return Math.PI * radius * radius; }\n}\n\nclass ShapeFactory {\n    public static Shape createShape(String type, double dimension) {\n        if (type.equals(\"Circle\")) return new Circle(dimension);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Database {\n    private String url;\n    private String username;\n    public Database(String url, String username) {\n        this.url = url;\n        this.username = username;\n    }\n}",
+  "class_after_refactoring": "interface Database {\n    void connect();\n    void disconnect();\n}\n\nclass MySQLDatabase implements Database {\n    private String url;\n    private String username;\n    public MySQLDatabase(String url, String username) {\n        this.url = url;\n        this.username = username;\n    }\n    public void connect() {}\n    public void disconnect() {}\n}\n\nclass DatabaseFactory {\n    public static Database createDatabase(String type, String url, String username) {\n        if (type.equals(\"MySQL\")) return new MySQLDatabase(url, username);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Logger {\n    private String level;\n    private String format;\n    public Logger(String level, String format) {\n        this.level = level;\n        this.format = format;\n    }\n}",
+  "class_after_refactoring": "interface Logger {\n    void log(String message);\n    String getLevel();\n}\n\nclass FileLogger implements Logger {\n    private String level;\n    private String format;\n    public FileLogger(String level, String format) {\n        this.level = level;\n        this.format = format;\n    }\n    public void log(String message) {}\n    public String getLevel() { return level; }\n}\n\nclass LoggerFactory {\n    public static Logger createLogger(String type, String level, String format) {\n        if (type.equals(\"File\")) return new FileLogger(level, format);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Document {\n    private String type;\n    private String content;\n    public Document(String type, String content) {\n        this.type = type;\n        this.content = content;\n    }\n}",
+  "class_after_refactoring": "interface Document {\n    void save();\n    String getContent();\n}\n\nclass PDFDocument implements Document {\n    private String type;\n    private String content;\n    public PDFDocument(String content) {\n        this.type = \"PDF\";\n        this.content = content;\n    }\n    public void save() {}\n    public String getContent() { return content; }\n}\n\nclass DocumentFactory {\n    public static Document createDocument(String type, String content) {\n        if (type.equals(\"PDF\")) return new PDFDocument(content);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Connection {\n    private String protocol;\n    private int timeout;\n    public Connection(String protocol, int timeout) {\n        this.protocol = protocol;\n        this.timeout = timeout;\n    }\n}",
+  "class_after_refactoring": "interface Connection {\n    void open();\n    void close();\n}\n\nclass TCPConnection implements Connection {\n    private String protocol;\n    private int timeout;\n    public TCPConnection(String protocol, int timeout) {\n        this.protocol = protocol;\n        this.timeout = timeout;\n    }\n    public void open() {}\n    public void close() {}\n}\n\nclass ConnectionFactory {\n    public static Connection createConnection(String protocol, int timeout) {\n        return new TCPConnection(protocol, timeout);\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Payment {\n    private String method;\n    private double amount;\n    public Payment(String method, double amount) {\n        this.method = method;\n        this.amount = amount;\n    }\n}",
+  "class_after_refactoring": "interface Payment {\n    void process();\n    double getAmount();\n}\n\nclass CreditCardPayment implements Payment {\n    private String method;\n    private double amount;\n    public CreditCardPayment(double amount) {\n        this.method = \"Credit Card\";\n        this.amount = amount;\n    }\n    public void process() {}\n    public double getAmount() { return amount; }\n}\n\nclass PaymentFactory {\n    public static Payment createPayment(String method, double amount) {\n        if (method.equals(\"Credit Card\")) return new CreditCardPayment(amount);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Message {\n    private String type;\n    private String content;\n    public Message(String type, String content) {\n        this.type = type;\n        this.content = content;\n    }\n}",
+  "class_after_refactoring": "interface Message {\n    void send();\n    String getContent();\n}\n\nclass EmailMessage implements Message {\n    private String type;\n    private String content;\n    public EmailMessage(String content) {\n        this.type = \"Email\";\n        this.content = content;\n    }\n    public void send() {}\n    public String getContent() { return content; }\n}\n\nclass MessageFactory {\n    public static Message createMessage(String type, String content) {\n        if (type.equals(\"Email\")) return new EmailMessage(content);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Report {\n    private String format;\n    private String data;\n    public Report(String format, String data) {\n        this.format = format;\n        this.data = data;\n    }\n}",
+  "class_after_refactoring": "interface Report {\n    void generate();\n    String getData();\n}\n\nclass PDFReport implements Report {\n    private String format;\n    private String data;\n    public PDFReport(String data) {\n        this.format = \"PDF\";\n        this.data = data;\n    }\n    public void generate() {}\n    public String getData() { return data; }\n}\n\nclass ReportFactory {\n    public static Report createReport(String format, String data) {\n        if (format.equals(\"PDF\")) return new PDFReport(data);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Notification {\n    private String type;\n    private String message;\n    public Notification(String type, String message) {\n        this.type = type;\n        this.message = message;\n    }\n}",
+  "class_after_refactoring": "interface Notification {\n    void send();\n    String getMessage();\n}\n\nclass PushNotification implements Notification {\n    private String type;\n    private String message;\n    public PushNotification(String message) {\n        this.type = \"Push\";\n        this.message = message;\n    }\n    public void send() {}\n    public String getMessage() { return message; }\n}\n\nclass NotificationFactory {\n    public static Notification createNotification(String type, String message) {\n        if (type.equals(\"Push\")) return new PushNotification(message);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Product {\n    private String category;\n    private double price;\n    public Product(String category, double price) {\n        this.category = category;\n        this.price = price;\n    }\n}",
+  "class_after_refactoring": "interface Product {\n    double getPrice();\n    String getCategory();\n}\n\nclass Electronics implements Product {\n    private String category;\n    private double price;\n    public Electronics(double price) {\n        this.category = \"Electronics\";\n        this.price = price;\n    }\n    public double getPrice() { return price; }\n    public String getCategory() { return category; }\n}\n\nclass ProductFactory {\n    public static Product createProduct(String category, double price) {\n        if (category.equals(\"Electronics\")) return new Electronics(price);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Cache {\n    private String type;\n    private int size;\n    public Cache(String type, int size) {\n        this.type = type;\n        this.size = size;\n    }\n}",
+  "class_after_refactoring": "interface Cache {\n    void store(String key, Object value);\n    Object get(String key);\n}\n\nclass MemoryCache implements Cache {\n    private String type;\n    private int size;\n    public MemoryCache(int size) {\n        this.type = \"Memory\";\n        this.size = size;\n    }\n    public void store(String key, Object value) {}\n    public Object get(String key) { return null; }\n}\n\nclass CacheFactory {\n    public static Cache createCache(String type, int size) {\n        if (type.equals(\"Memory\")) return new MemoryCache(size);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Filter {\n    private String type;\n    private String pattern;\n    public Filter(String type, String pattern) {\n        this.type = type;\n        this.pattern = pattern;\n    }\n}",
+  "class_after_refactoring": "interface Filter {\n    boolean apply(String input);\n    String getPattern();\n}\n\nclass RegexFilter implements Filter {\n    private String type;\n    private String pattern;\n    public RegexFilter(String pattern) {\n        this.type = \"Regex\";\n        this.pattern = pattern;\n    }\n    public boolean apply(String input) { return input.matches(pattern); }\n    public String getPattern() { return pattern; }\n}\n\nclass FilterFactory {\n    public static Filter createFilter(String type, String pattern) {\n        if (type.equals(\"Regex\")) return new RegexFilter(pattern);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Validator {\n    private String type;\n    private String rules;\n    public Validator(String type, String rules) {\n        this.type = type;\n        this.rules = rules;\n    }\n}",
+  "class_after_refactoring": "interface Validator {\n    boolean validate(String input);\n    String getRules();\n}\n\nclass EmailValidator implements Validator {\n    private String type;\n    private String rules;\n    public EmailValidator(String rules) {\n        this.type = \"Email\";\n        this.rules = rules;\n    }\n    public boolean validate(String input) { return input.contains(\"@\"); }\n    public String getRules() { return rules; }\n}\n\nclass ValidatorFactory {\n    public static Validator createValidator(String type, String rules) {\n        if (type.equals(\"Email\")) return new EmailValidator(rules);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Parser {\n    private String format;\n    private String data;\n    public Parser(String format, String data) {\n        this.format = format;\n        this.data = data;\n    }\n}",
+  "class_after_refactoring": "interface Parser {\n    Object parse(String input);\n    String getFormat();\n}\n\nclass JSONParser implements Parser {\n    private String format;\n    private String data;\n    public JSONParser(String data) {\n        this.format = \"JSON\";\n        this.data = data;\n    }\n    public Object parse(String input) { return null; }\n    public String getFormat() { return format; }\n}\n\nclass ParserFactory {\n    public static Parser createParser(String format, String data) {\n        if (format.equals(\"JSON\")) return new JSONParser(data);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Converter {\n    private String sourceFormat;\n    private String targetFormat;\n    public Converter(String sourceFormat, String targetFormat) {\n        this.sourceFormat = sourceFormat;\n        this.targetFormat = targetFormat;\n    }\n}",
+  "class_after_refactoring": "interface Converter {\n    String convert(String input);\n    String getTargetFormat();\n}\n\nclass ImageConverter implements Converter {\n    private String sourceFormat;\n    private String targetFormat;\n    public ImageConverter(String targetFormat) {\n        this.sourceFormat = \"PNG\";\n        this.targetFormat = targetFormat;\n    }\n    public String convert(String input) { return input + \".\" + targetFormat; }\n    public String getTargetFormat() { return targetFormat; }\n}\n\nclass ConverterFactory {\n    public static Converter createConverter(String sourceFormat, String targetFormat) {\n        if (sourceFormat.equals(\"PNG\")) return new ImageConverter(targetFormat);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Encoder {\n    private String algorithm;\n    private String data;\n    public Encoder(String algorithm, String data) {\n        this.algorithm = algorithm;\n        this.data = data;\n    }\n}",
+  "class_after_refactoring": "interface Encoder {\n    String encode(String input);\n    String getAlgorithm();\n}\n\nclass Base64Encoder implements Encoder {\n    private String algorithm;\n    private String data;\n    public Base64Encoder(String data) {\n        this.algorithm = \"Base64\";\n        this.data = data;\n    }\n    public String encode(String input) { return input; }\n    public String getAlgorithm() { return algorithm; }\n}\n\nclass EncoderFactory {\n    public static Encoder createEncoder(String algorithm, String data) {\n        if (algorithm.equals(\"Base64\")) return new Base64Encoder(data);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Builder {\n    private String type;\n    private String config;\n    public Builder(String type, String config) {\n        this.type = type;\n        this.config = config;\n    }\n}",
+  "class_after_refactoring": "interface Builder {\n    Object build();\n    String getConfig();\n}\n\nclass XMLBuilder implements Builder {\n    private String type;\n    private String config;\n    public XMLBuilder(String config) {\n        this.type = \"XML\";\n        this.config = config;\n    }\n    public Object build() { return null; }\n    public String getConfig() { return config; }\n}\n\nclass BuilderFactory {\n    public static Builder createBuilder(String type, String config) {\n        if (type.equals(\"XML\")) return new XMLBuilder(config);\n        return null;\n    }\n}"
+}
+
+{
+  "class_before_refactoring": "public class Formatter {\n    private String style;\n    private String text;\n    public Formatter(String style, String text) {\n        this.style = style;\n        this.text = text;\n    }\n}",
+  "class_after_refactoring": "interface Formatter {\n    String format(String input);\n    String getStyle();\n}\n\nclass HTMLFormatter implements Formatter {\n    private String style;\n    private String text;\n    public HTMLFormatter(String text) {\n        this.style = \"HTML\";\n        this.text = text;\n    }\n    public String format(String input) { return \"<p>\" + input + \"</p>\"; }\n    public String getStyle() { return style; }\n}\n\nclass FormatterFactory {\n    public static Formatter createFormatter(String style, String text) {\n        if (style.equals(\"HTML\")) return new HTMLFormatter(text);\n        return null;\n    }\n}"
+}
